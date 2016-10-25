@@ -98,7 +98,7 @@ public class GameState {
      * @param piece The piece to place
      * @param position The position
      */
-    private void placePiece(Piece piece, Position position) {
+    public void placePiece(Piece piece, Position position) {
         positionToPieceMap.put(position, piece);
     }
 }
