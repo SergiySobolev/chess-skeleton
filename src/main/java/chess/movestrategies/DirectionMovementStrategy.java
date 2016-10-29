@@ -6,6 +6,7 @@ import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -13,8 +14,13 @@ import java.util.List;
  * Strategy implementation witch has a set of possible shifts and max number of repeating this shifts
  */
 public class DirectionMovementStrategy implements MovementStrategy {
-    private byte maxDistance;
+    private int maxDistance;
     private List<Direction> directions;
+
+    public DirectionMovementStrategy(int maxDistance, Direction direction) {
+        this.maxDistance = maxDistance;
+        this.directions = Collections.singletonList(direction);
+    }
 
     public DirectionMovementStrategy(byte maxDistance, List<Direction> directions) {
         this.maxDistance = maxDistance;
