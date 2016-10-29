@@ -1,4 +1,4 @@
-package chess.movestrategy;
+package chess.movestrategies;
 
 
 import chess.GameState;

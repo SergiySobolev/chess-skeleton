@@ -1,4 +1,4 @@
-package chess.movestrategy;
+package chess.movestrategies;
 
 import chess.GameState;
 import chess.Position;
@@ -9,9 +9,13 @@ import java.util.Collection;
 import java.util.List;
 
 
+/**
+ * Strategy implementation witch has a set of possible shifts and max number of repeating this shifts
+ */
 public class DirectionMovementStrategy implements MovementStrategy {
     private byte maxDistance;
     private List<Direction> directions;
+
     public DirectionMovementStrategy(byte maxDistance, List<Direction> directions) {
         this.maxDistance = maxDistance;
         this.directions = directions;
@@ -21,15 +25,12 @@ public class DirectionMovementStrategy implements MovementStrategy {
         Collection<Position> possibleMoves = new ArrayList<Position>();
         for(Direction d: directions) {
             for(Pair<Integer, Integer> shift : d.getShifts()) {
-                Position currentPosition = startPosition;
-                for(byte i=0; i<maxDistance; i++) {
-                    Position newPosition = makeShift(currentPosition, shift);
-                    if(isReachable(newPosition, gameState) ){
-                        possibleMoves.add(newPosition);
-                        currentPosition = newPosition;
-                    } else {
-                        break;
-                    }
+                Position currentPosition = makeShift(startPosition, shift);
+                byte movesDone = 1;
+                while(isReachable(currentPosition, gameState) && movesDone <= maxDistance){
+                    possibleMoves.add(currentPosition);
+                    currentPosition = makeShift(currentPosition, shift);
+                    movesDone++;
                 }
             }
         }
