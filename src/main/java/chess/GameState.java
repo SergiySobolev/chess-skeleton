@@ -101,4 +101,18 @@ public class GameState {
     public void placePiece(Piece piece, Position position) {
         positionToPieceMap.put(position, piece);
     }
+
+    private boolean noObstacle(Position position) {
+        return getPieceAt(position) == null;
+    }
+
+    /**
+     * Checks if position can be occupied
+     * @param currentPosition position to check
+     * @return true if position in board and no another piece occupies it
+     */
+    public boolean isReachable(Position currentPosition) {
+        return currentPosition.isNotOutOfTheBoard() && noObstacle(currentPosition);
+    }
+
 }

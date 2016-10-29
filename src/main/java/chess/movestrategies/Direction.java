@@ -6,26 +6,26 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum Direction {
-    HORIZONTAL_VERTICAL(Arrays.asList(new Pair<Integer, Integer>(1,0),
-                                      new Pair<Integer, Integer>(-1,0),
-                                      new Pair<Integer, Integer>(0,1),
-                                      new Pair<Integer, Integer>(0,-1)
+    HORIZONTAL_VERTICAL(Arrays.asList(new Pair<>(1, 0),
+                                      new Pair<>(-1, 0),
+                                      new Pair<>(0,1),
+                                      new Pair<>(0,-1)
             )),
 
-    DIAGONAL(Arrays.asList(new Pair<Integer, Integer>(1,1),
-                           new Pair<Integer, Integer>(-1,1),
-                           new Pair<Integer, Integer>(1,-1),
-                           new Pair<Integer, Integer>(-1,-1)
+    DIAGONAL(Arrays.asList(new Pair<>(1,1),
+                           new Pair<>(-1,1),
+                           new Pair<>(1,-1),
+                           new Pair<>(-1,-1)
             )),
 
-    L_LIKE(Arrays.asList(new Pair<Integer, Integer>(2,1),
-                         new Pair<Integer, Integer>(2,-1),
-                         new Pair<Integer, Integer>(-2,1),
-                         new Pair<Integer, Integer>(-2,-1),
-                         new Pair<Integer, Integer>(1,2),
-                         new Pair<Integer, Integer>(1,-2),
-                         new Pair<Integer, Integer>(-1,2),
-                         new Pair<Integer, Integer>(-1,-2)
+    L_LIKE(Arrays.asList(new Pair<>(2,1),
+                         new Pair<>(2,-1),
+                         new Pair<>(-2,1),
+                         new Pair<>(-2,-1),
+                         new Pair<>(1,2),
+                         new Pair<>(1,-2),
+                         new Pair<>(-1,2),
+                         new Pair<>(-1,-2)
             ));
 
     private List<Pair<Integer, Integer>> shifts;

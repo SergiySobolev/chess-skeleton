@@ -1,5 +1,7 @@
 package chess;
 
+import javafx.util.Pair;
+
 /**
  * Describes a position on the Chess Board
  */
@@ -36,6 +38,25 @@ public class Position {
 
     public char getColumn() {
         return column;
+    }
+
+    /**
+     * Create a new Position object by shifting
+     * @param shift pair, where key - rows number to shift, value - columns number to shift
+     * @return position after shift
+     */
+    public Position makeShift(Pair<Integer, Integer> shift){
+        return new Position((char)(getColumn() + shift.getKey()), getRow() + shift.getValue());
+    }
+
+    /**
+     * @return true, if position row between row min and max, column - between column min and max.
+     * False otherwise
+     */
+    public boolean isNotOutOfTheBoard() {
+        boolean isColumnNotOutOfTheBoard = Position.MIN_COLUMN <= column && column <= Position.MAX_COLUMN;
+        boolean isRowNotOutOfTheBoard = Position.MIN_ROW <= row && row <= Position.MAX_ROW;
+        return isColumnNotOutOfTheBoard && isRowNotOutOfTheBoard;
     }
 
     @Override

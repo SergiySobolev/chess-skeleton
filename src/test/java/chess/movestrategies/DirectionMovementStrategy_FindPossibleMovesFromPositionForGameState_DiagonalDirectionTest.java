@@ -16,23 +16,23 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
-public class FindPossibleMovesFromPositionForGameState_DiagonalDirection {
+public class DirectionMovementStrategy_FindPossibleMovesFromPositionForGameState_DiagonalDirectionTest {
     @Test
-    public void startE5_emptyBoard_distance2() throws Exception {
+    public void startE5_emptyBoard_distance2()  {
         MovementStrategy movementStrategy = new DirectionMovementStrategy((byte) 2, Collections.singletonList(Direction.DIAGONAL));
         Collection<Position> possibleMoves = movementStrategy.findPossibleMovesFromPositionForGameState(new Position("e5"), new GameState());
         assertThat(possibleMoves, samePositions(asList("d6", "c7", "d4", "c3", "f6", "g7", "f4", "g3")));
     }
 
     @Test
-    public void startA1_emptyBoard_distance8() throws Exception {
+    public void startA1_emptyBoard_distance8() {
         MovementStrategy movementStrategy = new DirectionMovementStrategy((byte) 8, Collections.singletonList(Direction.DIAGONAL));
         Collection<Position> possibleMoves = movementStrategy.findPossibleMovesFromPositionForGameState(new Position("a1"), new GameState());
         assertThat(possibleMoves, samePositions(asList("b2", "c3", "d4", "e5", "f6", "g7", "h8")));
     }
 
     @Test
-    public void startE5_obstacleD4D6F4F6_distance2() throws Exception {
+    public void startE5_obstacleD4D6F4F6_distance2() {
         MovementStrategy movementStrategy = new DirectionMovementStrategy((byte) 2, Collections.singletonList(Direction.DIAGONAL));
         GameState gameState = new GameState();
         gameState.placePiece(new Pawn(Player.White), new Position("d4"));
