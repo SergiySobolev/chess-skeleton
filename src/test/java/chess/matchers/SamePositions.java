@@ -16,23 +16,28 @@ public class SamePositions extends TypeSafeDiagnosingMatcher<Collection<Position
     }
 
     @Override
-    protected boolean matchesSafely(Collection<Position> positions, Description description) {
-        for(Position p : positions){
+    protected boolean matchesSafely(Collection<Position> actualPositions, Description description) {
+        if(expectedPositions.size() != actualPositions.size()) {
+            description
+                    .appendText("Actual and expected positions lists has different size");
+            return false;
+        }
+        for(Position p : actualPositions){
             if(!expectedPositions.contains(p.toString())){
                 description
                         .appendText("Position ")
                         .appendValue(p.toString())
-                        .appendText(" not exists in expected positions lists ")
+                        .appendText(" not exists in expected actualPositions lists ")
                         .appendValue(expectedPositions.toString());
                 return false;
             }
         }
         for(String s : expectedPositions){
-            if(!positions.contains(new Position(s))){
+            if(!actualPositions.contains(new Position(s))){
                 description
-                        .appendText("Expected positions contains ")
+                        .appendText("Expected actualPositions contains ")
                         .appendValue(s)
-                        .appendText(" that absent in actual positions list ");
+                        .appendText(" that absent in actual actualPositions list ");
                 return false;
             }
         }

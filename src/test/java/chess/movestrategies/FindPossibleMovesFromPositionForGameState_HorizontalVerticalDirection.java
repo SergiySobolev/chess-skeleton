@@ -44,7 +44,6 @@ public class FindPossibleMovesFromPositionForGameState_HorizontalVerticalDirecti
         GameState gameState = new GameState();
         gameState.placePiece(new Pawn(Player.Black), new Position("e7"));
         Collection<Position> possibleMoves = movementStrategy.findPossibleMovesFromPositionForGameState(new Position("e5"), gameState);
-        assertThat(possibleMoves, hasSize(7));
         assertThat(possibleMoves, samePositions(asList("e4", "e3", "e6", "d5", "c5", "f5", "g5")));
     }
 
