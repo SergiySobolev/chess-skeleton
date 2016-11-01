@@ -4,10 +4,7 @@ import chess.GameState;
 import chess.Position;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -28,7 +25,9 @@ public class DirectionMovementStrategy implements MovementStrategy {
     }
 
     public Collection<Position> findPossibleMovesFromPositionForGameState(Position startPosition, GameState gameState) {
-        Collection<Position> possibleMoves = new ArrayList<Position>();
+        assert Objects.nonNull(startPosition);
+        assert Objects.nonNull(gameState);
+        Collection<Position> possibleMoves = new ArrayList<>();
         for(Direction d: directions) {
             for(Pair<Integer, Integer> shift : d.getShifts()) {
                 Position currentPosition = startPosition.makeShift(shift);

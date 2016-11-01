@@ -6,7 +6,9 @@ import chess.Player;
 import chess.Position;
 import chess.pieces.Knight;
 import chess.pieces.Pawn;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,6 +19,20 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 public class DirectionMovementStrategy_FindPossibleMovesFromPositionForGameState_DiagonalDirectionTest {
+    @Rule
+    public ExpectedException expectedException  = ExpectedException.none();
+
+    @Test
+    public void nullStartPosition() {
+        DirectionMovementStrategy directionMovementStrategy = new DirectionMovementStrategy((byte) 2, Collections.singletonList(Direction.DIAGONAL));
+        expectedException.expect(AssertionError.class);
+        directionMovementStrategy
+            .findPossibleMovesFromPositionForGameState(null, new GameState());
+        expectedException.expect(AssertionError.class);
+        directionMovementStrategy
+             .findPossibleMovesFromPositionForGameState(new Position("a1"), null);
+    }
+
     @Test
     public void startE5_emptyBoard_distance2()  {
         MovementStrategy movementStrategy = new DirectionMovementStrategy((byte) 2, Collections.singletonList(Direction.DIAGONAL));
