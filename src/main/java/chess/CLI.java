@@ -69,11 +69,22 @@ public class CLI {
                 } else if (input.equals("list")) {
                     listMoves();
                 } else if (input.startsWith("move")) {
-                    writeOutput("====> Move Is Not Implemented (yet) <====");
+                    doMove(input);
                 } else {
                     writeOutput("I didn't understand that.  Type 'help' for a list of commands.");
                 }
             }
+        }
+    }
+
+    private void doMove(String input) {
+        String from = input.substring(5,7);
+        String to = input.substring(8, 10);
+        try{
+            gameState.move(from, to);
+            gameState.switchPlayers();
+        } catch (IllegalArgumentException ex){
+            writeOutput(ex.getMessage());
         }
     }
 

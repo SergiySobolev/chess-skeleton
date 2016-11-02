@@ -125,6 +125,19 @@ public class GameState {
        move(new Position(from), new Position(to), currentPlayer);
     }
 
+    /**
+     * Checks if position can be occupied
+     * @param currentPosition position to check
+     * @return true if position in board and no another piece occupies it
+     */
+    public boolean isReachable(Position currentPosition) {
+        return currentPosition.isNotOutOfTheBoard() && noObstacle(currentPosition);
+    }
+
+    public void switchPlayers() {
+        currentPlayer = currentPlayer == Player.White ? Player.Black : Player.White;
+    }
+
     private void move(Position from, Position to, Player player) throws IllegalArgumentException{
         Piece piece = getPieceAt(from);
         if(Objects.isNull(piece)) {
@@ -138,15 +151,6 @@ public class GameState {
         }
         positionToPieceMap.remove(from);
         placePiece(piece, to);
-    }
-
-    /**
-     * Checks if position can be occupied
-     * @param currentPosition position to check
-     * @return true if position in board and no another piece occupies it
-     */
-    public boolean isReachable(Position currentPosition) {
-        return currentPosition.isNotOutOfTheBoard() && noObstacle(currentPosition);
     }
 
     Collection<Move> findAllPossibleMovesForWhitePlayer() {

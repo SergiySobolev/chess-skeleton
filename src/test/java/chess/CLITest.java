@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.util.List;
 
 import static junit.framework.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -90,6 +91,32 @@ public class CLITest {
         assertEquals("It should have print Rook's black pawn move: Pa7 - a6", "Pa7 - a6", output.get(33));
         assertEquals("It should have printed the board first", 721, output.get(48).length());
         assertEquals("It should have printed current players move", "White's Move", output.get(49));
+    }
+
+    @Test
+    public void testMoveE2E4() throws Exception {
+        runCliWithInput("new", "move e2 e4");
+        List<String> output = captureOutput();
+        assertEquals("Should have had 50 calls to print strings", 8, output.size());
+        assertEquals("It should have printed the board first", 721, output.get(6).length());
+        assertEquals("It should have printed the board again", 721, output.get(4).length());
+        assertTrue("4th line should contain white pawn moved from e2",  output.get(6).contains("4 |   |   |   |   | p |   |   |   | 4"));
+        assertTrue("2nd line shouldn't contain king's white pawn",  output.get(6).contains("2 | p | p | p | p |   | p | p | p | 2"));
+    }
+
+    @Test
+    public void testFirst5MovesFromSpainDebut() throws Exception {
+        runCliWithInput("new", "move e2 e4", "move e7 e5", "move g1 f3", "move b8 c6", "move f1 b5");
+        List<String> output = captureOutput();
+        assertEquals("Should have had 50 calls to print strings", 16, output.size());
+        assertTrue(output.get(14).contains("8 | R |   | B | Q | K | B | N | R | 8"));
+        assertTrue(output.get(14).contains("7 | P | P | P | P |   | P | P | P | 7"));
+        assertTrue(output.get(14).contains("6 |   |   | N |   |   |   |   |   | 6"));
+        assertTrue(output.get(14).contains("5 |   | b |   |   | P |   |   |   | 5"));
+        assertTrue(output.get(14).contains("4 |   |   |   |   | p |   |   |   | 4"));
+        assertTrue(output.get(14).contains("3 |   |   |   |   |   | n |   |   | 3"));
+        assertTrue(output.get(14).contains("2 | p | p | p | p |   | p | p | p | 2"));
+        assertTrue(output.get(14).contains("1 | r | n | b | q | k |   |   | r | 1"));
     }
 
     private List<String> captureOutput() {
