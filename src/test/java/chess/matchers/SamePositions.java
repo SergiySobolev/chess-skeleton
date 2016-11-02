@@ -11,7 +11,7 @@ import java.util.List;
 public class SamePositions extends TypeSafeDiagnosingMatcher<Collection<Position>> {
 
     private List<String> expectedPositions;
-    public SamePositions(List<String> expectedPositions) {
+    private SamePositions(List<String> expectedPositions) {
         this.expectedPositions = expectedPositions;
     }
 

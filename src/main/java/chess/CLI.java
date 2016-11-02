@@ -3,6 +3,9 @@ package chess;
 import chess.pieces.Piece;
 
 import java.io.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * This class provides the basic CLI interface to the Chess game.
@@ -64,7 +67,7 @@ public class CLI {
                 } else if (input.equals("board")) {
                     writeOutput("Current Game:");
                 } else if (input.equals("list")) {
-                    writeOutput("====> List Is Not Implemented (yet) <====");
+                    listMoves();
                 } else if (input.startsWith("move")) {
                     writeOutput("====> Move Is Not Implemented (yet) <====");
                 } else {
@@ -77,6 +80,17 @@ public class CLI {
     private void doNewGame() {
         gameState = new GameState();
         gameState.reset();
+    }
+
+    private void listMoves() {
+        writeOutput("White's Possible Moves:");
+        for(Move move : gameState.findAllPossibleMovesForWhitePlayer()) {
+            writeOutput(move.toString());
+        }
+        writeOutput("Black's Possible Moves:");
+        for(Move move : gameState.findAllPossibleMovesForBlackPlayer()) {
+            writeOutput(move.toString());
+        }
     }
 
     private void showBoard() {

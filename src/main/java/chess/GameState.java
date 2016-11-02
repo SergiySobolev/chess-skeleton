@@ -136,7 +136,9 @@ public class GameState {
         return positionToPieceMap.entrySet().stream()
                 .filter(p -> p.getValue().getOwner() == player)
                 .flatMap(p -> findAllPossibleMovesForPosition(p.getKey(), p.getValue()).stream())
-                .collect(Collectors.toSet());
+                .sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
+                .collect(Collectors.toList());
+
     }
 
     private boolean noObstacle(Position position) {

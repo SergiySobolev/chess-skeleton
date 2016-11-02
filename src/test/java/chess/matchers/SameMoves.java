@@ -28,14 +28,21 @@ public class SameMoves extends TypeSafeDiagnosingMatcher<Collection<Move>> {
     }};
 
     private List<String> expectedMovesAsStrings;
-    public SameMoves(List<String> expectedMovesAsStrings) {
+    private SameMoves(List<String> expectedMovesAsStrings) {
         this.expectedMovesAsStrings = expectedMovesAsStrings;
     }
     @Override
     protected boolean matchesSafely(Collection<Move> actualMoves, Description description) {
         if(expectedMovesAsStrings.size() != actualMoves.size()) {
             description
-                    .appendText("Actual and expected moves lists has different size");
+                    .appendText("Actual and expected moves lists has different size. ")
+                    .appendText("Actual moves list size=")
+                    .appendValue(actualMoves.size())
+                    .appendText(". ")
+                    .appendText("Expected moves list size=")
+                    .appendValue(expectedMovesAsStrings.size())
+                    .appendText(". ")
+                    ;
             return false;
         }
         List<Move> expectedMoves = expectedMovesAsStrings.stream().map(this::parseStringAsMove).collect(Collectors.toList());
