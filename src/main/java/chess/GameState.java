@@ -83,7 +83,7 @@ public class GameState {
      * @param colrow The string indication of position; i.e. "d5"
      * @return The piece at that position, or null if it does not exist.
      */
-    public Piece getPieceAt(String colrow) {
+    Piece getPieceAt(String colrow) {
         Position position = new Position(colrow);
         return getPieceAt(position);
     }
@@ -93,7 +93,7 @@ public class GameState {
      * @param position The position to inquire about.
      * @return The piece at that position, or null if it does not exist.
      */
-    public Piece getPieceAt(Position position) {
+    private Piece getPieceAt(Position position) {
         return positionToPieceMap.get(position);
     }
 
@@ -111,8 +111,30 @@ public class GameState {
      * @param piece The piece to place
      * @param colrow position as string
      */
-    public void placePiece(Piece piece, String colrow) {
+    void placePiece(Piece piece, String colrow) {
         positionToPieceMap.put(new Position(colrow), piece);
+    }
+
+    /**
+     * Moves piece from 'from' position to 'to' position. Throws IllegalArgumentException, if no piece placed on from position or move impossible
+     * @param from start position
+     * @param to target position
+     * @throws IllegalArgumentException
+     */
+    void move(String from, String to) throws IllegalArgumentException{
+       move(new Position(from), new Position(to));
+    }
+
+    private void move(Position from, Position to) throws IllegalArgumentException{
+        Piece piece = getPieceAt(from);
+        if(Objects.isNull(piece)) {
+            throw new IllegalArgumentException("No piece on from position: " + from );
+        }
+        if(!findAllPossibleMovesForPosition(from, piece).contains(new Move(piece, from, to))){
+            throw new IllegalArgumentException("To position isn't reachable: " + to);
+        }
+        positionToPieceMap.remove(from);
+        placePiece(piece, to);
     }
 
     /**
@@ -124,11 +146,11 @@ public class GameState {
         return currentPosition.isNotOutOfTheBoard() && noObstacle(currentPosition);
     }
 
-    public Collection<Move> findAllPossibleMovesForWhitePlayer() {
+    Collection<Move> findAllPossibleMovesForWhitePlayer() {
         return findAllPossibleMoves(White);
     }
 
-    public Collection<Move> findAllPossibleMovesForBlackPlayer() {
+    Collection<Move> findAllPossibleMovesForBlackPlayer() {
         return findAllPossibleMoves(Black);
     }
 
