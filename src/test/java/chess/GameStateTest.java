@@ -73,10 +73,18 @@ public class GameStateTest {
     }
 
     @Test
-    public void move_unExistingPieceOnA3_IllegalArgumentNotReachable() {
+    public void move_unExistingPieceOnA3_IllegalArgumentNotExist() {
         state.reset();
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("No piece on from position: a3");
         state.move("a3", "c8");
+    }
+
+    @Test
+    public void move_pawnE7E5_IllegalArgumentWrongPlayer() {
+        state.reset();
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Piece belongs to another player");
+        state.move("e7", "e5");
     }
 }

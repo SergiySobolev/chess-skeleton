@@ -122,13 +122,16 @@ public class GameState {
      * @throws IllegalArgumentException
      */
     void move(String from, String to) throws IllegalArgumentException{
-       move(new Position(from), new Position(to));
+       move(new Position(from), new Position(to), currentPlayer);
     }
 
-    private void move(Position from, Position to) throws IllegalArgumentException{
+    private void move(Position from, Position to, Player player) throws IllegalArgumentException{
         Piece piece = getPieceAt(from);
         if(Objects.isNull(piece)) {
             throw new IllegalArgumentException("No piece on from position: " + from );
+        }
+        if(piece.getOwner() != player) {
+            throw new IllegalArgumentException("Piece belongs to another player");
         }
         if(!findAllPossibleMovesForPosition(from, piece).contains(new Move(piece, from, to))){
             throw new IllegalArgumentException("To position isn't reachable: " + to);
