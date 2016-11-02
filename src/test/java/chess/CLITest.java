@@ -70,6 +70,28 @@ public class CLITest {
         assertEquals("It should have printed the board three times", output.get(2), output.get(4));
     }
 
+    @Test
+    public void testListCommandFromStartPosition() throws Exception {
+        runCliWithInput("new", "list");
+        List<String> output = captureOutput();
+
+        assertEquals("Should have had 50 calls to print strings", 50, output.size());
+        assertEquals("It should have printed the board first", 721, output.get(2).length());
+        assertEquals("It should have printed the board again", 721, output.get(4).length());
+        assertEquals("It should have white possible moves title", "White's Possible Moves:", output.get(6));
+        assertEquals("It should have print white knight move: nb1 - a3", "nb1 - a3", output.get(7));
+        assertEquals("It should have print white knight move: nb1 - c3", "nb1 - c3", output.get(8));
+        assertEquals("It should have print white knight move: ng1 - f3", "ng1 - f3", output.get(9));
+        assertEquals("It should have print white knight move: ng1 - h3", "ng1 - h3", output.get(10));
+        assertEquals("It should have print King's white pawn move: pe2 - e4", "pe2 - e4", output.get(20));
+        assertEquals("It should have print King's white pawn move: pe2 - e3", "pe2 - e3", output.get(19));
+        assertEquals("It should have black possible moves title", "Black's Possible Moves:", output.get(27));
+        assertEquals("It should have print Rook's black pawn move: Pa7 - a5", "Pa7 - a5", output.get(32));
+        assertEquals("It should have print Rook's black pawn move: Pa7 - a6", "Pa7 - a6", output.get(33));
+        assertEquals("It should have printed the board first", 721, output.get(48).length());
+        assertEquals("It should have printed current players move", "White's Move", output.get(49));
+    }
+
     private List<String> captureOutput() {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
