@@ -3,6 +3,7 @@ package chess.movestrategies;
 import chess.GameState;
 import chess.Player;
 import chess.Position;
+import chess.Take;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -42,5 +43,10 @@ public class PawnMovementStrategy implements MovementStrategy {
             distance--;
         }
         return positions;
+    }
+
+    @Override
+    public Collection<Take> findPossibleTakingFromPositionForGameState(Position startPosition, GameState gameState, Player currentPlayer) {
+        return null;
     }
 }

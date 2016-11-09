@@ -93,7 +93,7 @@ public class GameState {
      * @param position The position to inquire about.
      * @return The piece at that position, or null if it does not exist.
      */
-    private Piece getPieceAt(Position position) {
+    public Piece getPieceAt(Position position) {
         return positionToPieceMap.get(position);
     }
 
@@ -134,7 +134,12 @@ public class GameState {
         return currentPosition.isNotOutOfTheBoard() && noObstacle(currentPosition);
     }
 
-    public void switchPlayers() {
+    public boolean hasPieceOfAnotherPlayer(Player player, Position position){
+        Piece piece = getPieceAt(position);
+        return Objects.nonNull(piece) && piece.getOwner() != player;
+    }
+
+    void switchPlayers() {
         currentPlayer = currentPlayer == Player.White ? Player.Black : Player.White;
     }
 
@@ -170,7 +175,7 @@ public class GameState {
 
     }
 
-    private boolean noObstacle(Position position) {
+    public boolean noObstacle(Position position) {
         return getPieceAt(position) == null;
     }
 
