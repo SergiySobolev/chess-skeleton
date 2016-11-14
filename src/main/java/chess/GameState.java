@@ -30,7 +30,7 @@ public class GameState {
      * Create the game state.
      */
     public GameState() {
-        positionToPieceMap = new HashMap<Position, Piece>();
+        positionToPieceMap = new HashMap<>();
     }
 
     public Player getCurrentPlayer() {
@@ -139,6 +139,10 @@ public class GameState {
         return Objects.nonNull(piece) && piece.getOwner() != player;
     }
 
+    public boolean noObstacle(Position position) {
+        return getPieceAt(position) == null;
+    }
+
     void switchPlayers() {
         currentPlayer = currentPlayer == Player.White ? Player.Black : Player.White;
     }
@@ -166,6 +170,14 @@ public class GameState {
         return findAllPossibleMoves(Black);
     }
 
+    Collection<Take> findAllPossibleTakesForWhitePlayer() {
+        return findAllPossibleTakes(White);
+    }
+
+    Collection<Take> findAllPossibleTakesForBlackPlayer() {
+        return findAllPossibleTakes(Black);
+    }
+
     private Collection<Move> findAllPossibleMoves(Player player) {
         return positionToPieceMap.entrySet().stream()
                 .filter(p -> p.getValue().getOwner() == player)
@@ -175,14 +187,24 @@ public class GameState {
 
     }
 
-    public boolean noObstacle(Position position) {
-        return getPieceAt(position) == null;
+    private Collection<Take> findAllPossibleTakes(Player player) {
+        return positionToPieceMap.entrySet().stream()
+                .filter(p -> p.getValue().getOwner() == player)
+                .flatMap(p -> findAllPossibleTakesForPosition(p.getKey(), p.getValue()).stream())
+                .collect(Collectors.toList());
+
     }
 
     private Collection<Move> findAllPossibleMovesForPosition(Position startPosition, Piece piece) {
         return piece.getMovementStrategies().stream()
                 .flatMap(s -> s.findPossibleMovesFromPositionForGameState(startPosition, this).stream())
                 .map(endPosition -> new Move(piece, startPosition, endPosition))
+                .collect(Collectors.toList());
+    }
+
+    private Collection<Take> findAllPossibleTakesForPosition(Position startPosition, Piece piece) {
+        return piece.getMovementStrategies().stream()
+                .flatMap(s -> s.findPossibleTakingFromPositionForGameState(startPosition, this, currentPlayer).stream())
                 .collect(Collectors.toList());
     }
 
