@@ -4,6 +4,7 @@ import chess.GameState;
 import chess.Player;
 import chess.Position;
 import chess.Take;
+import chess.pieces.Piece;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -17,9 +18,13 @@ public class PawnMovementStrategy implements MovementStrategy {
         put(Player.White, 2);
         put(Player.Black, 7);
     }};
-    private static final Map<Player, Pair<Integer, Integer>> shifts = new HashMap<Player, Pair<Integer, Integer>>() {{
+    private static final Map<Player, Pair<Integer, Integer>> moveShifts = new HashMap<Player, Pair<Integer, Integer>>() {{
         put(Player.White, new Pair<>(0, 1));
         put(Player.Black, new Pair<>(0, -1));
+    }};
+    private static final Map<Player, List<Pair<Integer, Integer>>> takeShifts = new HashMap<Player, List<Pair<Integer, Integer>>>() {{
+        put(Player.White, Arrays.asList(new Pair<>(1, 1), new Pair<>(-1, 1)));
+        put(Player.Black, Arrays.asList(new Pair<>(1, -1), new Pair<>(-1, -1)));
     }};
 
     private Player player;
@@ -35,7 +40,7 @@ public class PawnMovementStrategy implements MovementStrategy {
         int distance = isPieceOnStartPosition ? 2 : 1;
         Collection<Position> positions = new ArrayList<>();
         Position currentPosition = startPosition;
-        Pair<Integer, Integer> shift = shifts.get(player);
+        Pair<Integer, Integer> shift = moveShifts.get(player);
         while(distance > 0) {
             currentPosition = currentPosition.makeShift(shift);
             if(!gameState.isReachable(currentPosition)) break;
@@ -47,6 +52,18 @@ public class PawnMovementStrategy implements MovementStrategy {
 
     @Override
     public Collection<Take> findPossibleTakingFromPositionForGameState(Position startPosition, GameState gameState, Player currentPlayer) {
-        return null;
+        if(impossibleLinesForPawn.contains(startPosition.getRow())) {
+            throw new IllegalArgumentException(startPosition.getRow() + " line is illegal line for pawn");
+        }
+        Collection<Take> taking = new ArrayList<>();
+        Piece currentPiece = gameState.getPieceAt(startPosition);
+        List<Pair<Integer, Integer>> shifts = takeShifts.get(player);
+        for(Pair<Integer, Integer> shift : shifts) {
+            Position currentPosition = startPosition.makeShift(shift);
+            if(gameState.hasPieceOfAnotherPlayer(currentPlayer, currentPosition)){
+                taking.add(new Take(currentPiece, startPosition, gameState.getPieceAt(currentPosition), currentPosition, Collections.emptyList()));
+            }
+        }
+        return taking;
     }
 }

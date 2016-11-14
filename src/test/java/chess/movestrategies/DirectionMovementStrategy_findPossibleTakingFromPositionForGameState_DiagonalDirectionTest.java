@@ -20,8 +20,8 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
-public class DirectionMovementStrategy_findPossibleTakingFromPositionForGameState_HorizontalVerticalDirectionTest {
-    private MovementStrategy movementStrategy = new DirectionMovementStrategy((byte) 7, Collections.singletonList(Direction.HORIZONTAL_VERTICAL));
+public class DirectionMovementStrategy_findPossibleTakingFromPositionForGameState_DiagonalDirectionTest {
+    private MovementStrategy movementStrategy = new DirectionMovementStrategy((byte) 7, Collections.singletonList(Direction.DIAGONAL));
 
     @Test
     public void startE5_emptyBoard_noPossibleTaking() {
@@ -30,36 +30,36 @@ public class DirectionMovementStrategy_findPossibleTakingFromPositionForGameStat
     }
 
     @Test
-    public void startE5_enemyOnE7_1take() {
+    public void startE5_enemyOnC7_1take() {
         GameState gameState = new GameState();
         Rook attacker = new Rook(Player.White);
         Position attackerPosition = new Position("e5");
         gameState.placePiece(attacker, attackerPosition);
         Bishop victim = new Bishop(Player.Black);
-        Position victimPosition = new Position("e7");
+        Position victimPosition = new Position("c7");
         gameState.placePiece(victim, victimPosition);
         Collection<Take> possibleMoves = movementStrategy.findPossibleTakingFromPositionForGameState(attackerPosition, gameState, Player.White);
         assertThat(possibleMoves, hasSize(1));
-        assertThat(possibleMoves, contains(new Take(attacker, attackerPosition, victim, victimPosition, Collections.singletonList(new Position("e6")))));
+        assertThat(possibleMoves, contains(new Take(attacker, attackerPosition, victim, victimPosition, Collections.singletonList(new Position("d6")))));
     }
 
     @Test
-    public void startE5_enemiesOnE8A5_2take() {
+    public void startE5_enemiesOnH8A1_2take() {
         GameState gameState = new GameState();
         Rook attacker = new Rook(Player.White);
         Position attackerPosition = new Position("e5");
         gameState.placePiece(attacker, attackerPosition);
         Bishop victim1 = new Bishop(Player.Black);
-        Position victim1Position = new Position("e8");
+        Position victim1Position = new Position("h8");
         gameState.placePiece(victim1, victim1Position);
         Rook victim2 = new Rook(Player.Black);
-        Position victim2Position = new Position("a5");
+        Position victim2Position = new Position("a1");
         gameState.placePiece(victim2, victim2Position);
         Collection<Take> possibleMoves = movementStrategy.findPossibleTakingFromPositionForGameState(attackerPosition, gameState, Player.White);
         assertThat(possibleMoves, hasSize(2));
         assertThat(possibleMoves, containsInAnyOrder(
-                new Take(attacker, attackerPosition,  victim1, victim1Position,  Arrays.asList(new Position("e6"), new Position("e7"))),
-                new Take(attacker, attackerPosition, victim2, victim2Position, Arrays.asList(new Position("d5"), new Position("c5"), new Position("b5")))
+                new Take(attacker, attackerPosition,  victim1, victim1Position,  Arrays.asList(new Position("f6"), new Position("g7"))),
+                new Take(attacker, attackerPosition, victim2, victim2Position, Arrays.asList(new Position("d4"), new Position("c3"), new Position("b2")))
         ));
     }
 
@@ -70,20 +70,20 @@ public class DirectionMovementStrategy_findPossibleTakingFromPositionForGameStat
         Position attackerPosition = new Position("e5");
         gameState.placePiece(attacker, attackerPosition);
         Bishop victim1 = new Bishop(Player.Black);
-        Position victim1Position = new Position("e8");
+        Position victim1Position = new Position("c3");
         gameState.placePiece(victim1, victim1Position);
         Rook victim2 = new Rook(Player.Black);
-        Position victim2Position = new Position("b5");
+        Position victim2Position = new Position("f6");
         gameState.placePiece(victim2, victim2Position);
         Knight cantBeTaken1 = new Knight(Player.Black);
-        gameState.placePiece(cantBeTaken1, new Position("a5"));
+        gameState.placePiece(cantBeTaken1, new Position("g7"));
         Queen cantBeTaken2 = new Queen(Player.Black);
-        gameState.placePiece(cantBeTaken2, new Position("c1"));
+        gameState.placePiece(cantBeTaken2, new Position("e1"));
         Collection<Take> possibleMoves = movementStrategy.findPossibleTakingFromPositionForGameState(attackerPosition, gameState, Player.White);
         assertThat(possibleMoves, hasSize(2));
         assertThat(possibleMoves, containsInAnyOrder(
-                new Take(attacker, attackerPosition,  victim1, victim1Position,  Arrays.asList(new Position("e6"), new Position("e7"))),
-                new Take(attacker, attackerPosition, victim2, victim2Position, Arrays.asList(new Position("d5"), new Position("c5")))
+                new Take(attacker, attackerPosition,  victim1, victim1Position, Collections.singletonList(new Position("d4"))),
+                new Take(attacker, attackerPosition, victim2, victim2Position, Collections.emptyList())
         ));
     }
 }
