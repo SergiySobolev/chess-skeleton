@@ -36,7 +36,7 @@ public class GameStateTest_findAllPossibleTakesTest {
     }
 
     @Test
-    public void scandinavianDefenceFirstTwoMoves() {
+    public void scandinavianDefenceFirstFiveMoves() {
         GameState gs = new GameState();
         gs.reset();
         gs.move("e2", "e4");

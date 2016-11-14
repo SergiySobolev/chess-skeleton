@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import static chess.Player.Black;
 import static chess.Player.White;
+import static chess.Player.oppositePlayer;
 
 /**
  * Class that represents the current state of the game.  Basically, what pieces are in which positions on the
@@ -144,7 +145,7 @@ public class GameState {
     }
 
     void switchPlayers() {
-        currentPlayer = currentPlayer == Player.White ? Player.Black : Player.White;
+        currentPlayer = Player.oppositePlayer(currentPlayer);
     }
 
     private void move(Position from, Position to, Player player) throws IllegalArgumentException{
@@ -178,6 +179,23 @@ public class GameState {
         return findAllPossibleTakes(Black);
     }
 
+    Collection<Take> findAttacksOnPosition(Position p) {
+        Piece piece = getPieceAt(p);
+        if(Objects.isNull(piece)) return Collections.emptyList();
+        Player offer = oppositePlayer(piece.getOwner());
+        Collection<Take> allEnemiesTakes = findAllPossibleTakes(offer);
+        return allEnemiesTakes.stream()
+                .filter(take -> take.getVictim() == piece && take.getVictimPosition().equals(p))
+                .collect(Collectors.toList());
+
+    }
+
+    Collection<Take> findAttacksOnKing(Player p) {
+        Position kingPosition = positionToPieceMap.entrySet().stream().filter(ppe -> ppe.getValue().equals(new King(p)))
+                .findFirst().orElseThrow(IllegalStateException::new).getKey();
+        return findAttacksOnPosition(kingPosition);
+    }
+
     private Collection<Move> findAllPossibleMoves(Player player) {
         return positionToPieceMap.entrySet().stream()
                 .filter(p -> p.getValue().getOwner() == player)
@@ -207,6 +225,7 @@ public class GameState {
                 .flatMap(s -> s.findPossibleTakingFromPositionForGameState(startPosition, this, currentPlayer).stream())
                 .collect(Collectors.toList());
     }
+
 
 
 }
