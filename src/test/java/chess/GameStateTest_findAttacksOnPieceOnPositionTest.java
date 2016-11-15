@@ -10,9 +10,11 @@ import java.util.Collections;
 
 import static chess.Player.Black;
 import static chess.Player.White;
+import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.Assert.assertTrue;
 
 public class GameStateTest_findAttacksOnPieceOnPositionTest {
 
@@ -95,6 +97,7 @@ public class GameStateTest_findAttacksOnPieceOnPositionTest {
         Position whiteQueenPosition = new Position("h5");
         gs.placePiece(whiteQueen, whiteQueenPosition);
         Collection<Take> attacksOnBlackKing = gs.findAttacksOnKing(Black);
+        assertTrue(gs.hasKingSafeMoves(Black));
         assertThat(attacksOnBlackKing, hasSize(1));
         assertThat(attacksOnBlackKing, contains(
                 new Take(whiteQueen, whiteQueenPosition, blackKing, blackKingPosition, Arrays.asList(
@@ -112,6 +115,10 @@ public class GameStateTest_findAttacksOnPieceOnPositionTest {
         assertThat(attacksOnBlackKing, contains(
                 new Take(whiteKnight, whiteKnightPosition, blackKing, blackKingPosition, Collections.emptyList())
         ));
-
+        assertTrue(gs.hasKingSafeMoves(Black));
+        gs.placePiece(new Rook(Black), new Position("f8"));
+        assertTrue(gs.hasKingSafeMoves(Black));
+        gs.placePiece(new Rook(Black), new Position("d8"));
+        assertFalse(gs.hasKingSafeMoves(Black));
     }
 }

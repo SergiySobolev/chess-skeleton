@@ -1,7 +1,6 @@
 package chess;
 
 
-import chess.movestrategies.MovementStrategy;
 import chess.pieces.*;
 
 import java.util.*;
@@ -81,6 +80,7 @@ public class GameState {
 
     /**
      * Get the piece at the position specified by the String
+     *
      * @param colrow The string indication of position; i.e. "d5"
      * @return The piece at that position, or null if it does not exist.
      */
@@ -91,6 +91,7 @@ public class GameState {
 
     /**
      * Get the piece at a given position on the board
+     *
      * @param position The position to inquire about.
      * @return The piece at that position, or null if it does not exist.
      */
@@ -100,7 +101,8 @@ public class GameState {
 
     /**
      * Method to place a piece at a given position
-     * @param piece The piece to place
+     *
+     * @param piece    The piece to place
      * @param position The position
      */
     public void placePiece(Piece piece, Position position) {
@@ -109,7 +111,8 @@ public class GameState {
 
     /**
      * Method to place a piece at a given position pointed as string
-     * @param piece The piece to place
+     *
+     * @param piece  The piece to place
      * @param colrow position as string
      */
     void placePiece(Piece piece, String colrow) {
@@ -118,16 +121,18 @@ public class GameState {
 
     /**
      * Moves piece from 'from' position to 'to' position. Throws IllegalArgumentException, if no piece placed on from position or move impossible
+     *
      * @param from start position
-     * @param to target position
+     * @param to   target position
      * @throws IllegalArgumentException
      */
-    void move(String from, String to) throws IllegalArgumentException{
-       move(new Position(from), new Position(to), currentPlayer);
+    void move(String from, String to) throws IllegalArgumentException {
+        move(new Position(from), new Position(to), currentPlayer);
     }
 
     /**
      * Checks if position can be occupied
+     *
      * @param currentPosition position to check
      * @return true if position in board and no another piece occupies it
      */
@@ -135,7 +140,7 @@ public class GameState {
         return currentPosition.isNotOutOfTheBoard() && noObstacle(currentPosition);
     }
 
-    public boolean hasPieceOfAnotherPlayer(Player player, Position position){
+    public boolean hasPieceOfAnotherPlayer(Player player, Position position) {
         Piece piece = getPieceAt(position);
         return Objects.nonNull(piece) && piece.getOwner() != player;
     }
@@ -148,15 +153,15 @@ public class GameState {
         currentPlayer = Player.oppositePlayer(currentPlayer);
     }
 
-    private void move(Position from, Position to, Player player) throws IllegalArgumentException{
+    private void move(Position from, Position to, Player player) throws IllegalArgumentException {
         Piece piece = getPieceAt(from);
-        if(Objects.isNull(piece)) {
-            throw new IllegalArgumentException("No piece on from position: " + from );
+        if (Objects.isNull(piece)) {
+            throw new IllegalArgumentException("No piece on from position: " + from);
         }
-        if(piece.getOwner() != player) {
+        if (piece.getOwner() != player) {
             throw new IllegalArgumentException("Piece belongs to another player");
         }
-        if(!findAllPossibleMovesForPosition(from, piece).contains(new Move(piece, from, to))){
+        if (!findAllPossibleMovesForPosition(from, piece).contains(new Move(piece, from, to))) {
             throw new IllegalArgumentException("To position isn't reachable: " + to);
         }
         positionToPieceMap.remove(from);
@@ -181,7 +186,7 @@ public class GameState {
 
     Collection<Take> findAttacksOnPosition(Position p) {
         Piece piece = getPieceAt(p);
-        if(Objects.isNull(piece)) return Collections.emptyList();
+        if (Objects.isNull(piece)) return Collections.emptyList();
         Player offer = oppositePlayer(piece.getOwner());
         Collection<Take> allEnemiesTakes = findAllPossibleTakes(offer);
         return allEnemiesTakes.stream()
@@ -190,10 +195,64 @@ public class GameState {
 
     }
 
-    Collection<Take> findAttacksOnKing(Player p) {
-        Position kingPosition = positionToPieceMap.entrySet().stream().filter(ppe -> ppe.getValue().equals(new King(p)))
-                .findFirst().orElseThrow(IllegalStateException::new).getKey();
-        return findAttacksOnPosition(kingPosition);
+    Collection<Take> findAttacksOnKing(Player player) {
+        Collection<Position> kingPosition = findPiecePositions(new King(player));
+        return kingPosition.stream()
+                .flatMap(position -> findAttacksOnPosition(position).stream())
+                .collect(Collectors.toList());
+    }
+
+    private List<Position> findPiecePositions(Piece p) {
+        return positionToPieceMap.entrySet().stream()
+                .filter(ppe -> ppe.getValue().equals(p))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    public boolean hasKingSafeMoves(Player player) {
+        King king = new King(player);
+        List<Position> kingPositions =  findPiecePositions(king);
+        assert kingPositions.size() == 1;
+        Position kingPosition = kingPositions.get(0);
+        Collection<Move> possibleKingMoves = findAllPossibleMovesForPosition(kingPosition, king);
+        boolean hasKingSafeMoves = false;
+        for(Move move : possibleKingMoves) {
+            assert move.getFrom() == kingPosition;
+            Position to = move.getTo();
+            move(move.getFrom(), to, player);
+            Collection<Take> attacksOnNewPosition =  findAttacksOnPosition(to);
+            move(to, move.getFrom(), player);
+            if(attacksOnNewPosition.isEmpty()) {
+                hasKingSafeMoves = true;
+                break;
+            }
+        }
+        return hasKingSafeMoves;
+    }
+
+    boolean canKingBeCovered(Player p) {
+        return true;
+    }
+
+    boolean canEnemyBeTakenByPlayer(Position pos, Player p) {
+        return findAllPossibleTakes(p).stream().filter(take -> take.getVictimPosition().equals(pos)).findAny().isPresent();
+    }
+
+    boolean isOppositeKingCheckMated(Player p) {
+        boolean isEnemyCheckMated = false;
+        Player oppositePlayer = oppositePlayer(p);
+        Collection<Take> attacksOnEnemyKing = findAttacksOnKing(oppositePlayer);
+        for (Take attack : attacksOnEnemyKing) {
+            Position attackerPosition = attack.getAttackerPosition();
+            boolean attackOnKingCanBeAvoid = canEnemyBeTakenByPlayer(attackerPosition, oppositePlayer)
+                    || hasKingSafeMoves(oppositePlayer)
+                    || canKingBeCovered(oppositePlayer);
+            if (!attackOnKingCanBeAvoid) {
+                isEnemyCheckMated = true;
+                break;
+            }
+        }
+        return isEnemyCheckMated;
     }
 
     private Collection<Move> findAllPossibleMoves(Player player) {
@@ -225,7 +284,6 @@ public class GameState {
                 .flatMap(s -> s.findPossibleTakingFromPositionForGameState(startPosition, this, currentPlayer).stream())
                 .collect(Collectors.toList());
     }
-
 
 
 }
