@@ -120,5 +120,6 @@ public class GameStateTest_findAttacksOnPieceOnPositionTest {
         assertTrue(gs.hasKingSafeMoves(Black));
         gs.placePiece(new Rook(Black), new Position("d8"));
         assertFalse(gs.hasKingSafeMoves(Black));
+        assertFalse(gs.isOppositeKingCheckMated(White));
     }
 }

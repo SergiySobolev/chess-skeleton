@@ -70,7 +70,22 @@ public class CLI {
                     listMoves();
                 } else if (input.startsWith("move")) {
                     doMove(input);
-                } else {
+                    if(gameState.isOppositeKingCheckMated(gameState.getCurrentPlayer())){
+                        writeOutput("The game is over. Congrats to " + gameState.getCurrentPlayer() + ".");
+                        doNewGame();
+                    } else {
+                        gameState.switchPlayers();
+                    }
+                } else if (input.startsWith("take")) {
+                    doTake(input);
+                    if(gameState.isOppositeKingCheckMated(gameState.getCurrentPlayer())){
+                        writeOutput("The game is over. Congrats to " + gameState.getCurrentPlayer() + ".");
+                        doNewGame();
+                    } else {
+                        gameState.switchPlayers();
+                    }
+                }
+                else {
                     writeOutput("I didn't understand that.  Type 'help' for a list of commands.");
                 }
             }
@@ -82,7 +97,16 @@ public class CLI {
         String to = input.substring(8, 10);
         try{
             gameState.move(from, to);
-            gameState.switchPlayers();
+        } catch (IllegalArgumentException ex){
+            writeOutput(ex.getMessage());
+        }
+    }
+
+    private void doTake(String input) {
+        String from = input.substring(5,7);
+        String to = input.substring(8, 10);
+        try{
+            gameState.take(from, to);
         } catch (IllegalArgumentException ex){
             writeOutput(ex.getMessage());
         }

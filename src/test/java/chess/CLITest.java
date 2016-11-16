@@ -108,7 +108,7 @@ public class CLITest {
     public void testFirst5MovesFromSpainDebut() throws Exception {
         runCliWithInput("new", "move e2 e4", "move e7 e5", "move g1 f3", "move b8 c6", "move f1 b5");
         List<String> output = captureOutput();
-        assertEquals("Should have had 50 calls to print strings", 16, output.size());
+        assertEquals("Should have had 16 calls to print strings", 16, output.size());
         assertTrue(output.get(14).contains("8 | R |   | B | Q | K | B | N | R | 8"));
         assertTrue(output.get(14).contains("7 | P | P | P | P |   | P | P | P | 7"));
         assertTrue(output.get(14).contains("6 |   |   | N |   |   |   |   |   | 6"));
@@ -117,6 +117,22 @@ public class CLITest {
         assertTrue(output.get(14).contains("3 |   |   |   |   |   | n |   |   | 3"));
         assertTrue(output.get(14).contains("2 | p | p | p | p |   | p | p | p | 2"));
         assertTrue(output.get(14).contains("1 | r | n | b | q | k |   |   | r | 1"));
+    }
+
+    @Test
+    public void fastestPossibleCheckMate() throws Exception {
+        runCliWithInput("new", "move g2 g4", "move e7 e5", "move f2 f3", "move d8 h4");
+        List<String> output = captureOutput();
+        assertEquals("Should have had 15 calls to print strings", 15, output.size());
+        assertEquals("Should be message about black victory", "The game is over. Congrats to Black.", output.get(12));
+    }
+
+    @Test
+    public void childCheckMate() throws Exception {
+        runCliWithInput("new", "move e2 e4", "move e7 e5", "move f1 c4", "move f8 c5", "move d1 h5", "move g8 f6", "take h5 f7");
+        List<String> output = captureOutput();
+        assertEquals("Should have had 21 calls to print strings", 21, output.size());
+        assertEquals("Should be message about white victory", "The game is over. Congrats to White.", output.get(18));
     }
 
     private List<String> captureOutput() {

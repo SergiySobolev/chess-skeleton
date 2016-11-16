@@ -131,6 +131,17 @@ public class GameState {
     }
 
     /**
+     * Takes piece on position  'to'  by piece from position "from". Throws IllegalArgumentException, if no piece placed on from position or move impossible
+     *
+     * @param from start position
+     * @param to   target position
+     * @throws IllegalArgumentException
+     */
+    void take(String from, String to) throws IllegalArgumentException {
+        take(new Position(from), new Position(to), currentPlayer);
+    }
+
+    /**
      * Checks if position can be occupied
      *
      * @param currentPosition position to check
@@ -166,6 +177,29 @@ public class GameState {
         }
         positionToPieceMap.remove(from);
         placePiece(piece, to);
+    }
+
+    private void take(Position from, Position to, Player player) throws IllegalArgumentException {
+        Piece attacker = getPieceAt(from);
+        if (Objects.isNull(attacker)) {
+            throw new IllegalArgumentException("No attacker on from position: " + from);
+        }
+        if (attacker.getOwner() != player) {
+            throw new IllegalArgumentException("Piece belongs to another player");
+        }
+        Piece victim = getPieceAt(to);
+        if (Objects.isNull(victim)) {
+            throw new IllegalArgumentException("No victim on to position: " + to);
+        }
+        if (victim.getOwner() == player) {
+            throw new IllegalArgumentException("Victim belongs to offer");
+        }
+        List<Position> possiblePositionsForTake = findAllPossibleTakesForPosition(from, attacker).stream().map(Take::getVictimPosition).collect(Collectors.toList());
+        if (!possiblePositionsForTake.contains(to)) {
+            throw new IllegalArgumentException("To position isn't reachable: " + to);
+        }
+        positionToPieceMap.remove(from);
+        placePiece(attacker, to);
     }
 
     Collection<Move> findAllPossibleMovesForWhitePlayer() {
@@ -209,7 +243,7 @@ public class GameState {
                 .collect(Collectors.toList());
     }
 
-    public boolean hasKingSafeMoves(Player player) {
+    boolean hasKingSafeMoves(Player player) {
         King king = new King(player);
         List<Position> kingPositions =  findPiecePositions(king);
         assert kingPositions.size() == 1;
@@ -230,23 +264,30 @@ public class GameState {
         return hasKingSafeMoves;
     }
 
-    boolean canKingBeCovered(Player p) {
-        return true;
+    private boolean canKingBeCovered(Player p, Take attack) {
+        Collection<Move> possibleMoves = findAllPossibleMoves(p);
+        Collection<Position> reachablePositions = possibleMoves.stream()
+                .filter(m -> !m.getPiece().equals(new King(p)))
+                .map(Move::getTo).collect(Collectors.toList());
+        Collection<Position> attackPath = attack.getPathFromAttackerToVictim();
+        return attackPath.stream().anyMatch(reachablePositions::contains);
     }
 
-    boolean canEnemyBeTakenByPlayer(Position pos, Player p) {
-        return findAllPossibleTakes(p).stream().filter(take -> take.getVictimPosition().equals(pos)).findAny().isPresent();
+    private boolean canBeTakenByPlayer(Position pos, Player p) {
+        return findAllPossibleTakes(p).stream()
+                .filter(take -> !take.getAttacker().equals(new King(p)))
+                .filter(take -> take.getVictimPosition().equals(pos)).findAny().isPresent();
     }
 
-    boolean isOppositeKingCheckMated(Player p) {
+    boolean isOppositeKingCheckMated(Player player) {
         boolean isEnemyCheckMated = false;
-        Player oppositePlayer = oppositePlayer(p);
+        Player oppositePlayer = oppositePlayer(player);
         Collection<Take> attacksOnEnemyKing = findAttacksOnKing(oppositePlayer);
         for (Take attack : attacksOnEnemyKing) {
             Position attackerPosition = attack.getAttackerPosition();
-            boolean attackOnKingCanBeAvoid = canEnemyBeTakenByPlayer(attackerPosition, oppositePlayer)
+            boolean attackOnKingCanBeAvoid = canBeTakenByPlayer(attackerPosition, oppositePlayer)
                     || hasKingSafeMoves(oppositePlayer)
-                    || canKingBeCovered(oppositePlayer);
+                    || canKingBeCovered(oppositePlayer, attack);
             if (!attackOnKingCanBeAvoid) {
                 isEnemyCheckMated = true;
                 break;
@@ -281,7 +322,7 @@ public class GameState {
 
     private Collection<Take> findAllPossibleTakesForPosition(Position startPosition, Piece piece) {
         return piece.getMovementStrategies().stream()
-                .flatMap(s -> s.findPossibleTakingFromPositionForGameState(startPosition, this, currentPlayer).stream())
+                .flatMap(s -> s.findPossibleTakingFromPositionForGameState(startPosition, this, piece.getOwner()).stream())
                 .collect(Collectors.toList());
     }
 
