@@ -70,25 +70,23 @@ public class CLI {
                     listMoves();
                 } else if (input.startsWith("move")) {
                     doMove(input);
-                    if(gameState.isOppositeKingCheckMated(gameState.getCurrentPlayer())){
-                        writeOutput("The game is over. Congrats to " + gameState.getCurrentPlayer() + ".");
-                        doNewGame();
-                    } else {
-                        gameState.switchPlayers();
-                    }
+                    checkForCheckMate();
                 } else if (input.startsWith("take")) {
                     doTake(input);
-                    if(gameState.isOppositeKingCheckMated(gameState.getCurrentPlayer())){
-                        writeOutput("The game is over. Congrats to " + gameState.getCurrentPlayer() + ".");
-                        doNewGame();
-                    } else {
-                        gameState.switchPlayers();
-                    }
-                }
-                else {
+                    checkForCheckMate();
+                } else {
                     writeOutput("I didn't understand that.  Type 'help' for a list of commands.");
                 }
             }
+        }
+    }
+
+    private void checkForCheckMate() {
+        if(gameState.isOppositeKingCheckMated(gameState.getCurrentPlayer())){
+            writeOutput("The game is over. Congrats to " + gameState.getCurrentPlayer() + ".");
+            doNewGame();
+        } else {
+            gameState.switchPlayers();
         }
     }
 
